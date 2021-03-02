@@ -44,17 +44,14 @@ def makeTileSurface(tiles, size = (200, 100)):
         if row%3 == 0:
             col += 1
 
-    pygame.draw.rect(surface, (255, 0, 0), (2, 2, 196, 98), 2)
+    pygame.draw.rect(surface, (255, 0, 0), (2, 2, 194, 96), 2)
 
     return surface
 
 def makeMapSurface(mapSize, gridSize):
     pass
 
-file = browseFiles()
-tileImg = Image.open(file)
-tiles = getTiles(tileImg)
-w, h = tiles[0].size
+tileFile = None
 
 screen = pygame.display.set_mode((1024, 512))
 clock = pygame.time.Clock()
@@ -62,27 +59,27 @@ clock = pygame.time.Clock()
 run = True
 while run:
 
-    surfacePositions = []
-    surfaces = []
-
-    surfaces.append(makeTileSurface(tiles))
-    surfaces.append(makeTileSurface(tiles))
-
-    for i in range(len(surfaces)):
-        surfacePos = (0, surfaces[i].get_height()*i)
-        surfacePositions.append(surfacePos)
-        screen.blit(surfaces[i], surfacePos)
+    screen.fill((0, 0, 0))
+    pygame.draw.rect(screen, (255, 0, 0), (220, 20, 100, 50))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN:
             mousePos = pygame.mouse.get_pos()
-            for i in range(len(surfaces)):
-                xPos = mousePos[0] > surfacePositions[i][0] and mousePos[0] < surfaces[i].get_width()
-                yPos = mousePos[1] > surfacePositions[i][1] and mousePos[1] < surfaces[i].get_height()*(i+1)
+            xPos = mousePos[0] > 220 and mousePos[0] < 320
+            yPos = mousePos[1] > 20 and mousePos[1] < 70
 
-                if all([xPos, yPos]):
-                    print("Hello from surface at: ", surfacePositions[i])
+            if all([xPos, yPos]):
+                tileFile = browseFiles()
+                if tileFile == '':
+                    tileFile = None
+                    break
+                tileImg = Image.open(tileFile)
+                tiles = getTiles(tileImg)
+                tileMenu = makeTileSurface(tiles)
+
+    if tileFile is not None:
+        screen.blit(tileMenu, (0, 0))
 
     pygame.display.update()
